@@ -1,22 +1,41 @@
-const _brand = Symbol('brand');
-const _motor = Symbol('motor');
-const _color = Symbol('color');
 export default class Car {
   constructor(brand, motor, color) {
-    this[_brand] = brand;
-    this[_motor] = motor;
-    this[_color] = color;
+    this.brand = brand;
+    this.motor = motor;
+    this.color = color;
   }
+
   get brand() {
-    return this[_brand];
+    return this._brand;
   }
+
+  set brand(value) {
+    this._brand = value;
+  }
+
   get motor() {
-    return this[_motor];
+    return this._motor;
   }
+
+  set motor(value) {
+    this._motor = value;
+  }
+
   get color() {
-    return this[_color];
+    return this._color;
   }
+
+  set color(value) {
+    this._color = value;
+  }
+
+  static get [Symbol.species]() {
+    return this;
+  }
+
   cloneCar() {
-    return new Car(this[_brand], this[_motor], this[_color]);
+    const Species = this.constructor[Symbol.species];
+
+    return new Species();
   }
 }
