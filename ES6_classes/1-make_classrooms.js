@@ -1,5 +1,4 @@
 import ClassRoom from './0-classroom.js';
-
 export default function initializeRooms() {
   return [
     new ClassRoom(19),
@@ -7,4 +6,3 @@ export default function initializeRooms() {
     new ClassRoom(34)
   ];
 }
-
