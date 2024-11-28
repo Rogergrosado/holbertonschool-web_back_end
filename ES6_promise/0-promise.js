@@ -1,8 +1,4 @@
-export default function getResponseFromAPI() {
-// eslint-disable-next-line
-    return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve('true');
-    });
-  });
-}
+import getResponseFromAPI from "./0-promise.js";
+
+const response = getResponseFromAPI();
+console.log(response instanceof Promise);
