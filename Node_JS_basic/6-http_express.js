@@ -1,10 +1,13 @@
+// task six - http server using express
 const express = require('express');
 
 const app = express();
-const port = 1245;
+app
+  .get('/', (req, res) => {
+    res.send('Hello Holberton School!');
+  })
+  // server should listen on port 1245
+  .listen(1245);
 
-app.get('/', (req, res) => {
-  res.send('Hello Holberton School!');
-}).listen(port);
-
+// export app variable
 module.exports = app;
