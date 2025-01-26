@@ -1,7 +1,6 @@
-// app controller
 class AppController {
-  getHomepage(request, response) {
-    response.send('Hello Holberton School!');
+  static getHomepage(request, response) {
+    response.send(200, 'Hello Holberton School!');
   }
 }
 

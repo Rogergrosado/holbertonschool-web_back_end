@@ -1,55 +1,29 @@
-// task seven - complex http server
-// using express
 const express = require('express');
+
+const args = process.argv.slice(2);
 const countStudents = require('./3-read_file_async');
 
+const DATABASE = args[0];
+
 const app = express();
-app
-  .get('/', (req, res) => {
-    res.send('Hello Holberton School!');
-  })
-  .get('/students', async (req, res) => {
-    res.write('This is the list of our students\n');
-    // content from `3-read_file_async.js`
-    // with database name passed as argument
-    await countStudents(process.argv[2])
-      .then((data) => {
-        const fields = Object.keys(data);
+const port = 1245;
 
-        const allStudents = fields.reduce(
-          (acc, curr) => acc + data[curr].numStudents,
-          0,
-        );
+app.get('/', (req, res) => {
+  res.send('Hello Holberton School!');
+});
 
-        res.write(`Number of students: ${allStudents}\n`);
+app.get('/students', async (req, res) => {
+  const msg = 'This is the list of our students\n';
+  try {
+    const students = await countStudents(DATABASE);
+    res.send(`${msg}${students.join('\n')}`);
+  } catch (error) {
+    res.send(`${msg}${error.message}`);
+  }
+});
 
-        for (let i = 0; i < fields.length; i += 1) {
-          res.write(
-            `Number of students in ${fields[i]}: ${
-              data[fields[i]].numStudents
-            }. `,
-          );
-          if (data[fields[i]].student) {
-            // check if 'student' property is defined
-            res.write(`List: ${data[fields[i]].student.join(', ')}`);
-          } else {
-            res.write('List: N/A');
-          }
+app.listen(port, () => {
+  //   console.log(`Example app listening at http://localhost:${port}`);
+});
 
-          if (i < fields.length - 1) {
-            res.write('\n');
-          }
-        }
-      })
-      .catch((err) => {
-        res.write(err.message);
-      })
-      .finally(() => {
-        res.end();
-      });
-  })
-  // server should listen on port 1245
-  .listen(1245);
-
-// export app variable
 module.exports = app;

@@ -1,17 +1,22 @@
-// link routes to app controller and students controller
-import app from '../server';
+import express from 'express';
 import AppController from '../controllers/AppController';
 import StudentsController from '../controllers/StudentsController';
 
-app.get('/', (req, res) => {
-  res.send(AppController.getHomepage());
-});
+function controllerRouting(app) {
+  const router = express.Router();
+  app.use('/', router);
 
-app.get('/students:major', (req, res) => {
-  const major = req.params.major;
-  if (major === 'CS' || major === 'SWE') {
-    res.send(StudentsController.getAllStudentsByMajor(req));
-  } else {
-    res.send(StudentsController.getAllStudents());
-  }
-});
+  router.get('/', (req, res) => {
+    AppController.getHomepage(req, res);
+  });
+
+  router.get('/students', (req, res) => {
+    StudentsController.getAllStudents(req, res, process.argv[2]);
+  });
+
+  router.get('/students/:major', (req, res) => {
+    StudentsController.getAllStudentsByMajor(req, res, process.argv[2]);
+  });
+}
+
+export default controllerRouting;

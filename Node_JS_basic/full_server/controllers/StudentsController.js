@@ -1,44 +1,48 @@
-// handle requests to retrieve student data
 import readDatabase from '../utils';
 
 class StudentsController {
-  static getAllStudents(req, res) {
-    const students = readDatabase('../../database.csv');
-    students.CS.names.sort();
-    students.CS.names.forEach((name) => {
-      res.write(
-        `Number of students in CS: ${students.CS.numStudents}. List: ${name}`
-      );
-    });
-    students.SWE.names.sort();
-    students.SWE.names.forEach((name) => {
-      res.write(
-        `Number of students in SWE: ${students.SWE.numStudents}. List: ${name}`
-      );
-    });
-    res.end();
+  static getAllStudents(request, response, DATABASE) {
+    readDatabase(DATABASE)
+      .then((fields) => {
+        const students = [];
+        // let count = 0;
+        let msg;
+
+        // for (const key of Object.keys(fields)) {
+        //   count += fields[key].length;
+        // }
+
+        // students.push(`Number of students: ${count}`);
+        students.push('This is the list of our students');
+
+        for (const key of Object.keys(fields)) {
+          msg = `Number of students in ${key}: ${
+            fields[key].length
+          }. List: ${fields[key].join(', ')}`;
+
+          students.push(msg);
+        }
+        response.send(200, `${students.join('\n')}`);
+      })
+      .catch(() => {
+        response.send(500, 'Cannot load the database');
+      });
   }
 
-  static getAllStudentsByMajor(req, res) {
-    const students = readDatabase('../../database.csv');
-    const major = req.params.major;
-    if (major === 'CS') {
-      students.CS.names.sort();
-      students.CS.names.forEach((name) => {
-        res.write(
-          `Number of students in SWE: ${students.CS.numStudents}. List: ${name}`
-        );
-      });
+  static getAllStudentsByMajor(request, response, DATABASE) {
+    const { major } = request.params;
+
+    if (major !== 'CS' && major !== 'SWE') {
+      response.send(500, 'Major parameter must be CS or SWE');
+    } else {
+      readDatabase(DATABASE)
+        .then((fields) => {
+          const students = fields[major];
+
+          response.send(200, `List: ${students.join(', ')}`);
+        })
+        .catch(() => response.send(500, 'Cannot load the database'));
     }
-    if (major === 'SWE') {
-      students.SWE.names.sort();
-      students.SWE.names.forEach((name) => {
-        res.write(
-          `Number of students in SWE: ${students.SWE.numStudents}. List: ${name}`
-        );
-      });
-    }
-    res.end();
   }
 }
 
