@@ -1,49 +1,45 @@
-import readDatabase from '../utils';
+import { readDatabase } from '../utils.js';
 
 class StudentsController {
-  static getAllStudents(request, response, DATABASE) {
-    readDatabase(DATABASE)
-      .then((fields) => {
-        const students = [];
-        // let count = 0;
-        let msg;
+  static async getAllStudents(req, res) {
+    const filePath = process.argv[2];
+    try {
+      const studentsByField = await readDatabase(filePath);
+      let response = 'This is the list of our students\n';
 
-        // for (const key of Object.keys(fields)) {
-        //   count += fields[key].length;
-        // }
+      const sortedFields = Object.keys(studentsByField).sort((a, b) =>
+        a.toLowerCase().localeCompare(b.toLowerCase())
+      );
 
-        // students.push(`Number of students: ${count}`);
-        students.push('This is the list of our students');
+      for (const field of sortedFields) {
+        const list = studentsByField[field];
+        response += `Number of students in ${field}: ${list.length}. List: ${list.join(', ')}\n`;
+      }
 
-        for (const key of Object.keys(fields)) {
-          msg = `Number of students in ${key}: ${
-            fields[key].length
-          }. List: ${fields[key].join(', ')}`;
-
-          students.push(msg);
-        }
-        response.send(200, `${students.join('\n')}`);
-      })
-      .catch(() => {
-        response.send(500, 'Cannot load the database');
-      });
+      res.status(200).send(response.trim());
+    } catch (err) {
+      res.status(500).send('Cannot load the database');
+    }
   }
 
-  static getAllStudentsByMajor(request, response, DATABASE) {
-    const { major } = request.params;
+  static async getAllStudentsByMajor(req, res) {
+    const filePath = process.argv[2];
+    const { major } = req.params;
 
     if (major !== 'CS' && major !== 'SWE') {
-      response.send(500, 'Major parameter must be CS or SWE');
-    } else {
-      readDatabase(DATABASE)
-        .then((fields) => {
-          const students = fields[major];
+      res.status(500).send('Major parameter must be CS or SWE');
+      return;
+    }
 
-          response.send(200, `List: ${students.join(', ')}`);
-        })
-        .catch(() => response.send(500, 'Cannot load the database'));
+    try {
+      const studentsByField = await readDatabase(filePath);
+      const list = studentsByField[major] || [];
+      res.status(200).send(`List: ${list.join(', ')}`);
+    } catch (err) {
+      res.status(500).send('Cannot load the database');
     }
   }
 }
 
 export default StudentsController;
+
