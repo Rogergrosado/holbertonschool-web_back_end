@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint",
     "check-lint": "lint [0-9]*.js",
-    "test": "test": "mocha 2-read_file.test.js --exit",
+    "test": "mocha 2-read_file.test.js --exit",
     "dev": "nodemon --exec babel-node ./full_server/server.js ./database.csv"
   },
   "author": "",
