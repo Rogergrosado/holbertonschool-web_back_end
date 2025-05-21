@@ -10,25 +10,30 @@ function countStudents(path) {
       return;
     }
 
-    const headers = lines[0].split(',');
-    const students = lines.slice(1);
+    const header = lines[0].split(',');
+    const studentData = lines.slice(1);
 
     const fields = {};
-    let total = 0;
+    let totalStudents = 0;
 
-    for (const line of students) {
-      const parts = line.split(',');
-      if (parts.length < headers.length) continue;
+    for (const line of studentData) {
+      const values = line.split(',');
 
-      const firstName = parts[0].trim();
-      const field = parts[3].trim();
+      // Skip incomplete lines by wrapping the logic in an if block
+      if (values.length >= header.length) {
+        const firstname = values[0].trim();
+        const field = values[3].trim(); // 4th column = field
 
-      if (!fields[field]) fields[field] = [];
-      fields[field].push(firstName);
-      total += 1;
+        if (!fields[field]) {
+          fields[field] = [];
+        }
+
+        fields[field].push(firstname);
+        totalStudents += 1;
+      }
     }
 
-    console.log(`Number of students: ${total}`);
+    console.log(`Number of students: ${totalStudents}`);
     for (const [field, names] of Object.entries(fields)) {
       console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
     }
@@ -38,3 +43,4 @@ function countStudents(path) {
 }
 
 module.exports = countStudents;
+
